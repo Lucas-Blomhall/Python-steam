@@ -37,4 +37,3 @@ Denna hemtenta tvingar dig till att använda två klasser som på ett logiskt s�
 - Utgå från numreringen jag satt
 - Databas-klassen kommer ofta använda sig av "raise"-keywordet när du gör try-except, du hanterar sedan detta i din Menu-klass
 - Genom att separera dessa två klasser gör vi Databas-klassen mer återanvändbar - fundera på varför!
->>>>>>> 466c8686f9017cb4844a65e984d61a60cfe939f1
