@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+HEAD
 Python
 =======
 # HEMTENTAN
