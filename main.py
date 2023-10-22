@@ -33,11 +33,17 @@ class VideoGameDatabase:
 
     def load_data(self):
         # 1
-        """
-        - This method should load the video game data from the json-file
-        - It should be run ONCE when the class is created / instantiated
-        """
-        pass
+
+        f = open('steam.json')
+        data = json.load(f)
+        print(data)
+        return data
+
+        # """
+        # - This method should load the video game data from the json-file
+        # - It should be run ONCE when the class is created / instantiated
+        # """
+        # pass
 
     def search_game(self, word_to_search_for: str, app_id: int) -> dict:
         # 4
@@ -181,6 +187,36 @@ class Menu:
 
     def start_main_menu(self):
         # 3
+        while True:
+            print("[1] - Show summary of a game")
+            print("[2] - Show price of a game")
+            print("[3] - Compare game ratings")
+            print("[4] - Show developer games")
+            print("[5] - Export video games from a genre of choice")
+            print("[6] - (VG) Latest video games summary")
+            print("[7] - (VG) Game average owners")
+            print("[8] - (VG) List most popular games")
+            print("[q] - Quit (no dedicated method required)")
+            answer = input("Please select your choise")
+            if answer == "1":
+                self.show_game_summary()
+            elif answer == "2":
+                self.show_pricing()
+            elif answer == "3":
+                self.compare_ratings()
+            elif answer == "4":
+                self.show_developer_games()
+            elif answer == "5":
+                self.export_games_by_genre()
+            elif answer == "6":
+                self.latest_games()
+            elif answer == "7":
+                self.analyze_owner_estimation()
+            elif answer == "8":
+                self.list_popular_games()
+            elif answer == "q":
+                self.quit()
+
         """
         This should start a standard flow for a menu which asks the user what to do.
         Example:
@@ -197,23 +233,27 @@ class Menu:
         [q] - Quit (no dedicated method required)
         """
         # Remove pass when you've added code
-        pass
+
+
+
 
     def show_game_summary(self):
-        # 5
-        """
-        - Print a simple summary of a single game chosen by name or appid
-        - Ask the user for input and handle any raised exceptions
-        - Use the relevant / corresponding method in the Database class
-        - If you want (optional), you can also add some interesting information about the game, such
-        as how the price compares to the average of all game prices, if the average playtime is high or low compared to others
-        and so forth. Only do this once you have completed the other requirements (hint: this is easy to do with pandas).
+            obj = VideoGameDatabase()
+            obj.load_data()
+            # 5
+        # """
+        # - Print a simple summary of a single game chosen by name or appid
+        # - Ask the user for input and handle any raised exceptions
+        # - Use the relevant / corresponding method in the Database class
+        # - If you want (optional), you can also add some interesting information about the game, such
+        # as how the price compares to the average of all game prices, if the average playtime is high or low compared to others
+        # and so forth. Only do this once you have completed the other requirements (hint: this is easy to do with pandas).
 
-        Hint: First use the search-method in the Database class
-        """
+        # Hint: First use the search-method in the Database class
+        # """
 
-        # Remove pass when you've added code
-        pass
+        # # Remove pass when you've added code
+        # pass
 
     def show_pricing(self):
         # 7
