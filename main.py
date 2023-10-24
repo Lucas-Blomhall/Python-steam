@@ -163,8 +163,10 @@ class VideoGameDatabase:
             return True
         elif second_game_score > first_game_score:
             return False
+        elif second_game_score == first_game_score:
+            print("The two games have the same rating, and the comparison could not be completed.")
         else:
-            raise KeyError
+            raise KeyError("Unable to complete the comparison between the two games.")
 
         """
         - Should based on "_get_rating" compare two game ratings (how good the game is considered by users)
@@ -181,19 +183,17 @@ class VideoGameDatabase:
 
         if self.video_games_df.empty:
             print("Data hasn't been loaded. Please load the data first.")
-            return
+            return []
 
         matching_rows = self.video_games_df[self.video_games_df['developer'] == developer]
-        if matching_rows.empty:
-            print(f"Couldn't find the game: {developer}")
-            return
         
-        try:
-            game_price = matching_rows['developer']
-            print(f"Hi, this is the price of the game {developer}: {game_price}")
-            return game_price
-        except:
-            raise KeyError
+        if matching_rows.empty:
+            raise KeyError(f"Couldn't find any games by the developer: {developer}")
+        
+        game_name = matching_rows['name'].tolist()
+        print(f"Games by {developer}: {game_name}")
+        return game_name
+        
         
         """
         - Should return a list of all games made by a developer
@@ -206,6 +206,19 @@ class VideoGameDatabase:
     def get_game_by_genre(self, genre: str) -> list:
         # 13
         
+        if self.video_games_df.empty:
+            print("Data hasn't been loaded. Please load the data first.")
+            return []
+
+        matching_rows = self.video_games_df[self.video_games_df['developer'] == genre]
+        
+        if matching_rows.empty:
+            raise KeyError(f"Couldn't find any games by the genre: {genre}")
+        
+        game_genre = matching_rows['name'].tolist()
+        print(f"Games by genre: {genre} in this game {game_genre}")
+        return game_genre
+    
         """
         - Should return a list of all games with a specific genre
         - raise an exception if the genre did not exist in the dataset
@@ -216,6 +229,9 @@ class VideoGameDatabase:
 
     def average_owners(self, game: str) -> float:
         # 16
+
+        
+
         """
         __NOT__ REQUIRED FOR G (Godkänt)
         **ONLY START WITH THIS METHOD WHEN YOU HAVE COMPLETED ALL OTHER**
@@ -413,6 +429,14 @@ class Menu:
 
     def export_games_by_genre(self):
         # 14
+
+        input_genre = input("please enter a genre")
+        exported_data = self.get_game_by_genre(input_genre)
+        with open("sample.json", "w") as outfile:
+            outfile.write(exported_data)
+        
+
+
         """
         - Should use the corresponding method in the Database class to export games by genre
         - Should ask the user for the relevant input and handle any exceptions raised
@@ -423,6 +447,9 @@ class Menu:
 
     def quit(self):
         # 15
+
+        exit()
+
         """
         Should quit the program
         """
