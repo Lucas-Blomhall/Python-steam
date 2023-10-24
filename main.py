@@ -14,6 +14,8 @@
 # Such as a tkinter-based app, or a web application.
 ############################################################################################
 
+
+import pandas as pd
 import json
 
 
@@ -29,15 +31,21 @@ class VideoGameDatabase:
     # attempt to load the data from the the default filename
     def __init__(self, games=None, filename="steam.json"):
         # 2
-        self.video_games = []
+        self.video_games_df = pd.DataFrame()
 
     def load_data(self):
         # 1
+        self.video_games_df = pd.read_json('steam.json')
+        print("We fetched data")
+        return self.video_games_df
 
-        f = open('steam.json')
-        data = json.load(f)
-        print(data)
-        return data
+        # Gammal kod som var som första labbarna.
+        # with open('steam.json', 'r') as file:
+        #     data = json.load(file)
+        #     self.video_games = data
+        #     print("We fetched data")
+        # return data
+
 
         # """
         # - This method should load the video game data from the json-file
@@ -45,20 +53,72 @@ class VideoGameDatabase:
         # """
         # pass
 
-    def search_game(self, word_to_search_for: str, app_id: int) -> dict:
+    def search_game(self, word_to_search_for: str = None, app_id: int  = None) -> dict: # Här sätter jag default värden till None.
         # 4
-        """
-        - Should return the first video game with a "name" that either CONTAINS **or** COMPLETELY MATCHES the input word
-        - It should also be able to use an appip instead of the name for searching
-        - return the entire dictionary if it exists
-        - raise a "KeyError" exception if it did not exist
-        This method can be used both from the outside of the class AND from other methods inside the class
-        You will probably use it a lot
-        """
-        pass
+
+        if word_to_search_for:
+            result_df = self.video_games_df[self.video_games_df['name'].str.contains(word_to_search_for, case=False, na=False)]
+            print(f"Hi, we have this/these in stock! \n {result_df}")
+            return result_df
+        elif app_id:
+            result_df = self.video_games_df[self.video_games_df['appid'] == app_id]
+            print(f"Hi, we have this/these in stock! \n {result_df}")
+            return result_df
+        else:
+            if not result_df.empty:
+                return result_df.iloc[0].to_dict()  # Return the first matched game as a dictionary
+            else:
+                raise KeyError(f"Game with word {word_to_search_for} or app_id {app_id} not found.")
+            
+
+            
+            # if filtered_df == True:
+            #     print(f"Hi, we have {filtered_df} in stock!")
+            #     return filtered_df
+            # else:
+            #     print(f"We couldn't find {word_to_search_for} with appid {app_id} in stock.")
+            #     return None
+            
+            # for game in self.video_games:
+            # if game["name"].lower() == word_to_search_for.lower() and game["appid"] == app_id:
+            #     filtered_df = self.video_games.loc[self.video_games['name'].str.contains('Cross', case=False, na=False)]
+            #     print(f"Hi, we have {game['name']} in stock!")
+            #     return game
+        
+
+
+        # if app_id == self.video_games["appid"]:
+        #     print("Hi we got the video game in stock!")
+        
+        # """
+        # - Should return the first video game with a "name" that either CONTAINS **or** COMPLETELY MATCHES the input word
+        # - It should also be able to use an appip instead of the name for searching
+        # - return the entire dictionary if it exists
+        # - raise a "KeyError" exception if it did not exist
+        # This method can be used both from the outside of the class AND from other methods inside the class
+        # You will probably use it a lot
+        # """
+        # pass
 
     def get_price(self, game: str) -> float:
         # 6
+        
+        if self.video_games_df.empty:
+            print("Data hasn't been loaded. Please load the data first.")
+            return
+
+        matching_rows = self.video_games_df[self.video_games_df['name'] == game]
+        if matching_rows.empty:
+            print(f"Couldn't find the game: {game}")
+            return
+        
+        game_price = matching_rows['price'].values[0]
+        print(f"Hi, this is the price of the game {game}: {game_price}")
+        return game_price
+
+
+        
+
         """
         - Should return the price of the game
         - raise a "KeyError" exception if the game did not exist
@@ -67,6 +127,22 @@ class VideoGameDatabase:
 
     def _get_rating(self, game: dict) -> float:
         # 8
+
+        rating_positive = self.video_games_df["positive_ratings"]
+        rating_negative = self.video_games_df["negative_ratings"]
+
+        rating_divided = float(rating_positive + rating_negative)
+
+        if rating_divided == 0:
+            return 0.0
+
+        try: 
+            rating = float(rating_positive / rating_divided)
+        except ZeroDivisionError:
+            ZeroDivisionError
+        print(rating)
+        return rating 
+
         """
         This is a non-public method (should never be called from outside the class)
         which should receive a game as a parameter and calculate the rating for it
@@ -79,6 +155,17 @@ class VideoGameDatabase:
 
     def compare_video_game_ratings(self, first_game, second_game) -> bool:
         # 9
+
+        first_game_score = first_game._get_rating()
+        second_game_score = second_game._get_rating()
+
+        if first_game_score > second_game_score:
+            return True
+        elif second_game_score > first_game_score:
+            return False
+        else:
+            raise KeyError
+
         """
         - Should based on "_get_rating" compare two game ratings (how good the game is considered by users)
         - Return True if the first game has a higher rating
@@ -91,6 +178,23 @@ class VideoGameDatabase:
 
     def get_developer_games(self, developer: str) -> list:
         # 11
+
+        if self.video_games_df.empty:
+            print("Data hasn't been loaded. Please load the data first.")
+            return
+
+        matching_rows = self.video_games_df[self.video_games_df['developer'] == developer]
+        if matching_rows.empty:
+            print(f"Couldn't find the game: {developer}")
+            return
+        
+        try:
+            game_price = matching_rows['developer']
+            print(f"Hi, this is the price of the game {developer}: {game_price}")
+            return game_price
+        except:
+            raise KeyError
+        
         """
         - Should return a list of all games made by a developer
         - raise an exception if the developer did not exist in the dataset
@@ -101,6 +205,7 @@ class VideoGameDatabase:
 
     def get_game_by_genre(self, genre: str) -> list:
         # 13
+        
         """
         - Should return a list of all games with a specific genre
         - raise an exception if the genre did not exist in the dataset
@@ -182,7 +287,8 @@ class Menu:
         - An instance of the VideoGameDatabase is created
         - We are starting the menu-flow that should give the user a choice of what to do
         """
-        self.video_game_db = VideoGameDatabase(filename="steam.json")
+        self.obj = VideoGameDatabase(filename="steam.json")
+        self.data_loaded = False
         self.start_main_menu()
 
     def start_main_menu(self):
@@ -197,7 +303,9 @@ class Menu:
             print("[7] - (VG) Game average owners")
             print("[8] - (VG) List most popular games")
             print("[q] - Quit (no dedicated method required)")
+
             answer = input("Please select your choise")
+
             if answer == "1":
                 self.show_game_summary()
             elif answer == "2":
@@ -236,11 +344,16 @@ class Menu:
 
 
 
-
+    
     def show_game_summary(self):
-            obj = VideoGameDatabase()
-            obj.load_data()
+            
+            input_word_to_search_for = input("Enter the name of the game: ").strip()
+            input_app_id = int(input("Enter the app_id: "))
+            self.obj.load_data()
+            self.obj.search_game(input_word_to_search_for, input_app_id)
             # 5
+
+
         # """
         # - Print a simple summary of a single game chosen by name or appid
         # - Ask the user for input and handle any raised exceptions
@@ -256,6 +369,9 @@ class Menu:
         # pass
 
     def show_pricing(self):
+        game = input("Enter the name: ")
+        self.obj.get_price(game)
+
         # 7
         """
         Allow the user to check the price of a specific game
@@ -265,6 +381,9 @@ class Menu:
 
     def compare_ratings(self):
         # 10
+
+        self.compare_video_game_ratings()
+
         """
         - Should use the relevant method in the Database class
         - Should ask the user for the relevant input and handle any exceptions raised
@@ -275,6 +394,14 @@ class Menu:
 
     def show_developer_games(self):
         # 12
+
+        input_developer = input("developer name: ")
+        try: 
+            self.get_developer_games(input_developer)
+        except:
+            raise KeyError
+        
+
         """
         - Should be able to show all games made by a specific game developer company
         - Should use the corresponding method in the Database class to show developer games
