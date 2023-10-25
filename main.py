@@ -140,10 +140,12 @@ class VideoGameDatabase:
 
         try: 
             rating = float(rating_positive / rating_divided)
-        except ZeroDivisionError:
-            ZeroDivisionError
-        print(rating)
-        return rating 
+            print(rating)
+            return rating 
+        except ZeroDivisionError as e:
+            print("Error: Cannot divide by zero")
+
+        
 
         """
         This is a non-public method (should never be called from outside the class)
