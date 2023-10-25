@@ -59,11 +59,11 @@ class VideoGameDatabase:
         if word_to_search_for:
             result_df = self.video_games_df[self.video_games_df['name'].str.contains(word_to_search_for, case=False, na=False)]
             print(f"Hi, we have this/these in stock! \n {result_df}")
-            return result_df
+            return result_df[0]
         elif app_id:
             result_df = self.video_games_df[self.video_games_df['appid'] == app_id]
             print(f"Hi, we have this/these in stock! \n {result_df}")
-            return result_df
+            return result_df[0]
         else:
             if not result_df.empty:
                 return result_df.iloc[0].to_dict()  # Return the first matched game as a dictionary
@@ -111,10 +111,12 @@ class VideoGameDatabase:
         if matching_rows.empty:
             print(f"Couldn't find the game: {game}")
             return
-        
-        game_price = matching_rows['price'].values[0]
-        print(f"Hi, this is the price of the game {game}: {game_price}")
-        return game_price
+        try:
+            game_price = matching_rows['price'].values[0]
+            print(f"Hi, this is the price of the game {game}: {game_price}")
+            return game_price
+        except:
+            raise KeyError
 
 
         
