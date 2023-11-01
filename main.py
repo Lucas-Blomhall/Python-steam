@@ -14,10 +14,8 @@
 # Such as a tkinter-based app, or a web application.
 ############################################################################################
 
-
 import pandas as pd
 import json
-
 
 class VideoGameDatabase:
     """
@@ -34,6 +32,11 @@ class VideoGameDatabase:
         self.video_games_df = pd.DataFrame()
 
     def load_data(self):
+        """
+        - This method should load the video game data from the json-file
+        - It should be run ONCE when the class is created / instantiated
+        """
+
         # 1
         self.video_games_df = pd.read_json('steam.json')
         print("We fetched data")
@@ -46,14 +49,16 @@ class VideoGameDatabase:
         #     print("We fetched data")
         # return data
 
-
-        # """
-        # - This method should load the video game data from the json-file
-        # - It should be run ONCE when the class is created / instantiated
-        # """
-        # pass
-
     def search_game(self, word_to_search_for: str = None, app_id: int  = None) -> dict: # Här sätter jag default värden till None.
+        """
+        - Should return the first video game with a "name" that either CONTAINS **or** COMPLETELY MATCHES the input word
+        - It should also be able to use an appip instead of the name for searching
+        - return the entire dictionary if it exists
+        - raise a "KeyError" exception if it did not exist
+        This method can be used both from the outside of the class AND from other methods inside the class
+        You will probably use it a lot
+        """
+        
         # 4
 
         if word_to_search_for:
@@ -84,25 +89,18 @@ class VideoGameDatabase:
             #     filtered_df = self.video_games.loc[self.video_games['name'].str.contains('Cross', case=False, na=False)]
             #     print(f"Hi, we have {game['name']} in stock!")
             #     return game
-        
-
-
+    
         # if app_id == self.video_games["appid"]:
         #     print("Hi we got the video game in stock!")
-        
-        # """
-        # - Should return the first video game with a "name" that either CONTAINS **or** COMPLETELY MATCHES the input word
-        # - It should also be able to use an appip instead of the name for searching
-        # - return the entire dictionary if it exists
-        # - raise a "KeyError" exception if it did not exist
-        # This method can be used both from the outside of the class AND from other methods inside the class
-        # You will probably use it a lot
-        # """
         # pass
 
     def get_price(self, game: str) -> float:
+        """
+        - Should return the price of the game
+        - raise a "KeyError" exception if the game did not exist
+        """
+
         # 6
-        
         if self.video_games_df.empty:
             print("Data hasn't been loaded. Please load the data first.")
             return
@@ -118,18 +116,17 @@ class VideoGameDatabase:
         except:
             raise KeyError
 
-
-        
-
-        """
-        - Should return the price of the game
-        - raise a "KeyError" exception if the game did not exist
-        """
-        pass
-
     def _get_rating(self, game: dict) -> float:
-        # 8
+        """
+        This is a non-public method (should never be called from outside the class)
+        which should receive a game as a parameter and calculate the rating for it
+        The rating should be a calculated by using the positive_ratings and negative_ratings.
+        E.g rating = positive_ratings / (positive_ratings + negative_ratings)
+        Return the rating as a float rounded to two decimals
+        - *** DO NOT MODIFY THE ORIGINAL DATASET BY ADDING THIS AS A NEW PROPERTY, even if that makes it easier! ***
+        """
 
+        # 8
         rating_positive = self.video_games_df["positive_ratings"]
         rating_negative = self.video_games_df["negative_ratings"]
 
@@ -145,19 +142,13 @@ class VideoGameDatabase:
         except ZeroDivisionError as e:
             print("Error: Cannot divide by zero")
 
-        
-
-        """
-        This is a non-public method (should never be called from outside the class)
-        which should receive a game as a parameter and calculate the rating for it
-        The rating should be a calculated by using the positive_ratings and negative_ratings.
-        E.g rating = positive_ratings / (positive_ratings + negative_ratings)
-        Return the rating as a float rounded to two decimals
-        - *** DO NOT MODIFY THE ORIGINAL DATASET BY ADDING THIS AS A NEW PROPERTY, even if that makes it easier! ***
-        """
-        pass
-
     def compare_video_game_ratings(self, first_game, second_game) -> bool:
+        """
+        - Should based on "_get_rating" compare two game ratings (how good the game is considered by users)
+        - Return True if the first game has a higher rating
+        - Return False if the first game has a lower rating
+        - raise a "KeyError" exception if the comparison was unable to be completed (make sure to handle it)
+        """
         # 9
 
         first_game_score = first_game._get_rating()
@@ -172,17 +163,16 @@ class VideoGameDatabase:
         else:
             raise KeyError("Unable to complete the comparison between the two games.")
 
-        """
-        - Should based on "_get_rating" compare two game ratings (how good the game is considered by users)
-        - Return True if the first game has a higher rating
-        - Return False if the first game has a lower rating
-        - raise a "KeyError" exception if the comparison was unable to be completed (make sure to handle it)
-        """
 
         # Remove pass when you've added code
         pass
 
     def get_developer_games(self, developer: str) -> list:
+        """
+        - Should return a list of all games made by a developer
+        - raise an exception if the developer did not exist in the dataset
+        """
+         
         # 11
 
         if self.video_games_df.empty:
@@ -199,15 +189,17 @@ class VideoGameDatabase:
         return game_name
         
         
-        """
-        - Should return a list of all games made by a developer
-        - raise an exception if the developer did not exist in the dataset
-        """
+       
 
         # Remove pass when you've added code
         pass
 
     def get_game_by_genre(self, genre: str) -> list:
+        """
+        - Should return a list of all games with a specific genre
+        - raise an exception if the genre did not exist in the dataset
+        """
+         
         # 13
         
         if self.video_games_df.empty:
@@ -223,10 +215,7 @@ class VideoGameDatabase:
         print(f"Games by genre: {genre} in this game {game_genre}")
         return game_genre
     
-        """
-        - Should return a list of all games with a specific genre
-        - raise an exception if the genre did not exist in the dataset
-        """
+       
 
         # Remove pass when you've added code
         pass
@@ -312,6 +301,21 @@ class Menu:
         self.start_main_menu()
 
     def start_main_menu(self):
+        """
+        This should start a standard flow for a menu which asks the user what to do.
+        Example:
+
+        What would you like to do?
+        [1] - Show summary of a game
+        [2] - Show price of a game
+        [3] - Compare game ratings
+        [4] - Show developer games
+        [5] - Export video games from a genre of choice
+        [6] - (VG) Latest video games summary
+        [7] - (VG) Game average owners
+        [8] - (VG) List most popular games
+        [q] - Quit (no dedicated method required)
+        """
         # 3
         while True:
             print("[1] - Show summary of a game")
@@ -345,74 +349,66 @@ class Menu:
             elif answer == "q":
                 self.quit()
 
-        """
-        This should start a standard flow for a menu which asks the user what to do.
-        Example:
-
-        What would you like to do?
-        [1] - Show summary of a game
-        [2] - Show price of a game
-        [3] - Compare game ratings
-        [4] - Show developer games
-        [5] - Export video games from a genre of choice
-        [6] - (VG) Latest video games summary
-        [7] - (VG) Game average owners
-        [8] - (VG) List most popular games
-        [q] - Quit (no dedicated method required)
-        """
+        
         # Remove pass when you've added code
 
 
 
     
     def show_game_summary(self):
+        """
+        - Print a simple summary of a single game chosen by name or appid
+        - Ask the user for input and handle any raised exceptions
+        - Use the relevant / corresponding method in the Database class
+        - If you want (optional), you can also add some interesting information about the game, such
+        as how the price compares to the average of all game prices, if the average playtime is high or low compared to others
+        and so forth. Only do this once you have completed the other requirements (hint: this is easy to do with pandas).
+
+        Hint: First use the search-method in the Database class
+        """
             
-            input_word_to_search_for = input("Enter the name of the game: ").strip()
-            input_app_id = int(input("Enter the app_id: "))
-            self.obj.load_data()
-            self.obj.search_game(input_word_to_search_for, input_app_id)
-            # 5
+        input_word_to_search_for = input("Enter the name of the game: ").strip()
+        input_app_id = int(input("Enter the app_id: "))
+        self.obj.load_data()
+        self.obj.search_game(input_word_to_search_for, input_app_id)
+        # 5
 
 
-        # """
-        # - Print a simple summary of a single game chosen by name or appid
-        # - Ask the user for input and handle any raised exceptions
-        # - Use the relevant / corresponding method in the Database class
-        # - If you want (optional), you can also add some interesting information about the game, such
-        # as how the price compares to the average of all game prices, if the average playtime is high or low compared to others
-        # and so forth. Only do this once you have completed the other requirements (hint: this is easy to do with pandas).
-
-        # Hint: First use the search-method in the Database class
-        # """
+        
 
         # # Remove pass when you've added code
         # pass
 
     def show_pricing(self):
-        game = input("Enter the name: ")
-        self.obj.get_price(game)
-
-        # 7
         """
         Allow the user to check the price of a specific game
         - Should ask the user for the relevant input and handle any exceptions raised
         """
+
+        game = input("Enter the name: ")
+        self.obj.get_price(game)
+        # 7
+        
         pass
 
     def compare_ratings(self):
-        # 10
-
-        self.compare_video_game_ratings()
-
         """
         - Should use the relevant method in the Database class
         - Should ask the user for the relevant input and handle any exceptions raised
         """
+        # 10
+
+        self.compare_video_game_ratings()
 
         # Remove pass when you've added code
         pass
 
     def show_developer_games(self):
+        """
+        - Should be able to show all games made by a specific game developer company
+        - Should use the corresponding method in the Database class to show developer games
+        - Should ask the user for the relevant input and handle any exceptions raised
+        """
         # 12
 
         input_developer = input("developer name: ")
@@ -422,16 +418,17 @@ class Menu:
             raise KeyError
         
 
-        """
-        - Should be able to show all games made by a specific game developer company
-        - Should use the corresponding method in the Database class to show developer games
-        - Should ask the user for the relevant input and handle any exceptions raised
-        """
+        
 
         # Remove pass when you've added code
         pass
 
     def export_games_by_genre(self):
+        """
+        - Should use the corresponding method in the Database class to export games by genre
+        - Should ask the user for the relevant input and handle any exceptions raised
+        - Should export these games to a new json-file
+        """
         # 14
 
         input_genre = input("please enter a genre")
@@ -441,22 +438,18 @@ class Menu:
         
 
 
-        """
-        - Should use the corresponding method in the Database class to export games by genre
-        - Should ask the user for the relevant input and handle any exceptions raised
-        - Should export these games to a new json-file
-        """
         # Remove pass when you've added code
         pass
 
     def quit(self):
+        """
+        Should quit the program
+        """
         # 15
 
         exit()
 
-        """
-        Should quit the program
-        """
+        
         pass
 
     def analyze_owner_estimation(self):
